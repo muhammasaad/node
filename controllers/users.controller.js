@@ -14,41 +14,22 @@ exports.createUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     const users = await USER.find().exec()
-    res.json({
-        statusCode: 200,
-        data: users,
-        message: 'Users Retrieved successfully',
-        success: true
-    })
+    new ResponseHanding(res, 200, "Users Retrieved successfully", true, users);
 }
 
 exports.getUser = async (req, res) => {
     const user = await USER.findOne({ email: req.params.email })
-    res.json({
-        statusCode: 200,
-        data: user,
-        message: 'User Retrieved successfully',
-        success: true
-    })
+    new ResponseHanding(res, 200, "User Retrieved successfully", true, user);
+
 }
 
 exports.updateUser = async (req, res) => {
     const { name, email } = req.body
     const user = await USER.findOneAndUpdate({ _id: req.params.id }, { name: name, email: email }, { new: true })
-    res.json({
-        statusCode: 200,
-        data: user,
-        message: 'User Updated successfully',
-        success: true
-    })
+    new ResponseHanding(res, 200, "User Updated successfully", true, user);
 }
 
 exports.deleteUser = async (req, res) => {
     const user = await USER.findOneAndDelete({ _id: req.params.id })
-    res.json({
-        statusCode: 200,
-        data: user,
-        message: 'User DELETED successfully',
-        success: true
-    })
+    new ResponseHanding(res, 200, "User DELETED successfully", true, user);
 }

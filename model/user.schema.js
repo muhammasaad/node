@@ -12,7 +12,8 @@ const userSchema = new Schema({
         },
     },
     password: { type: String, required: true },
-    isEmailVerified: { type: Boolean, required: true, default: false }
+    isEmailVerified: { type: Boolean, required: true, default: false },
+    otp: String
 })
 
 exports.User = mongoose.model('Users', userSchema)

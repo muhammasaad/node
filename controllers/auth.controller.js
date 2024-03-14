@@ -15,6 +15,8 @@ exports.signup = async (req, res) => {
     const user = await USER.create({ name, email, password })
     const hashedPassword = await bcrypt.hash(password, 10)
     user.password = hashedPassword
+    const OTP = await otp.generate(6, { upperCaseAlphabets: false, specialChars: false, digits: true, lowerCaseAlphabets: false })
+    user.otp = OTP
     await user.save()
     return new ResponseHanding(res, 200, "Created User Successfully", true, user);
 }
@@ -31,7 +33,7 @@ exports.userVerifedByEmail = async (req, res) => {
     })
 
     const mailOptions = {
-        from: "rrohamsaad@gmail.com",
+        from: "noreplybuiltinsoft@gmail.com",
         to: 'msaadamin0334@gmail.com',
         subject: 'OTP For verification',
         text: `Verification Code to walk-in: 123456`,
@@ -46,6 +48,20 @@ exports.userVerifedByEmail = async (req, res) => {
             return new ResponseHanding(res, 200, "Email sent successfully", true)
         }
     })
+}
+
+exports.verifyUser = async (req, res) => {
+    const { otp, email } = req.body
+    const user = await USER.findOne({ email: email })
+    if (!user) {
+        return new ResponseHanding(res, 400, "User not found", false);
+    }
+    if (user.otp == otp) {
+        user.isEmailVerified = true
+        const token = await jwt.sign({ email: user.email }, process.env.SECRET_KEY)
+        await user.save()
+        return new ResponseHanding(res, 200, "Verified User", true, token)
+    }
 }
 
 exports.otp = async (req, res) => {
@@ -69,6 +85,7 @@ exports.login = async (req, res) => {
     if (!comparePassword) {
         return new ResponseHanding(res, 200, "Password is incorrect", false);
     }
-    return new ResponseHanding(res, 200, "Login Successfully", true);
+    const token = await jwt.sign({ email: findUser.email }, process.env.SECRET_KEY)
+    return new ResponseHanding(res, 200, "Login Successfully", true, token);
 }
 

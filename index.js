@@ -20,7 +20,7 @@ connection.once('open', () => {
     console.log('Database Connection has been established successfully')
 })
 
-app.use('/api', userRouter.router)
+app.use('/user', userRouter.router)
 app.use('/auth', authRouter.router)
 
 app.listen(process.env.PORT, () => {

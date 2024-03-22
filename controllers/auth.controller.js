@@ -7,12 +7,13 @@ const otp = require('otp-generator')
 const jwt = require('jsonwebtoken')
 
 exports.signup = async (req, res) => {
-    const { name, email, password } = req.body;
-    const findUser = await USER.findOne({ email: email })
-    if (findUser) {
+    const { username, email, password } = req.body;
+    const findUserByUsername = await USER.findOne({ username: username })
+    const findUserByEmail = await USER.findOne({ email: email })
+    if (findUserByUsername || findUserByEmail) {
         return new ResponseHanding(res, 400, "User Already Exists", false, findUser);
     }
-    const user = await USER.create({ name, email, password })
+    const user = await USER.create({ username, email, password })
     const hashedPassword = await bcrypt.hash(password, 10)
     user.password = hashedPassword
     const OTP = await otp.generate(6, { upperCaseAlphabets: false, specialChars: false, digits: true, lowerCaseAlphabets: false })
@@ -27,7 +28,7 @@ exports.userVerifedByEmail = async (req, res) => {
         port: process.env.SMTP_PORT,
         secure: false,
         auth: {
-            user: "rrohamsaad@gmail.com",
+            user: "noreplybuiltinsoft@gmail.com",
             pass: process.env.SMTP_PASSWORD
         }
     })
@@ -89,3 +90,15 @@ exports.login = async (req, res) => {
     return new ResponseHanding(res, 200, "Login Successfully", true, token);
 }
 
+
+exports.resetPassword = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await USER.findOne({ email: email })
+    if (!user) {
+        return new ResponseHanding(res, 400, "Email is incorrect", false);
+    }
+    const hashedPassword = await bcrypt.hash(password, 10)
+    user.password = hashedPassword
+    await user.save()
+    return new ResponseHanding(res, 200, "Password Reset Succesfully", true);
+}

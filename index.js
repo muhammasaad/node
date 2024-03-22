@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const userRouter = require('./routes/users.route')
 const authRouter = require('./routes/auth.route')
+const teacherRouter = require('./routes/teachers.route')
 const dotenv = require("dotenv")
 dotenv.config()
 
@@ -22,6 +23,7 @@ connection.once('open', () => {
 
 app.use('/user', userRouter.router)
 app.use('/auth', authRouter.router)
+app.use('/teacher', teacherRouter.router)
 
 app.listen(process.env.PORT, () => {
     console.log("Port is running on "+ process.env.PORT )

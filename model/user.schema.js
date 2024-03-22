@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose
 
 const userSchema = new Schema({
-    name: { type: String, required: false, default: '' },
+    username: { type: String, required: true, default: '', unique: true, index: true },
     email: {
         type: String, required: true, unique: true, trim: true, index: true, validate: {
             validator: function (v) {
@@ -12,8 +12,10 @@ const userSchema = new Schema({
         },
     },
     password: { type: String, required: true },
-    isEmailVerified: { type: Boolean, required: true, default: false },
-    otp: String
+    phoneNumber: { type: String, required: false, default: ''},
+    isEmailVerified: { type: Boolean, default: false },
+    otp: String,
+    profilePic: { }
 })
 
 exports.User = mongoose.model('Users', userSchema)

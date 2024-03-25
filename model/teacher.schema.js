@@ -18,6 +18,9 @@ const teacherSchema = new Schema({
         required: false,
         default: 'male'
     },
+    uploadPic: {
+        type: String,
+    },
     phoneNumber: { type: String, required: true, default: '' },
     DOB: { type: Date, required: false },
     bloodGroup: { type: String, required: false },

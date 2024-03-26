@@ -34,6 +34,25 @@ exports.createTeacher = async (req, res) => {
     }
 }
 
+exports.findAllTeachers = async (req, res) => {
+    try {
+        const { page, limit, search } = req.query;
+        const skip = (Number(page) - 1) * Number(limit);
+        const filters = {}
+        if (search) {
+            filters['firstName'] = { $regex: new RegExp(search, 'i') };
+            console.log(search)
+        }
+        const teachers = await TEACHER.find(filters).sort({ createdAt: -1 }).skip(skip).limit(limit)
+        if (!teachers) {
+            return new ResponseHanding(res, 200, "No record", false);
+        }
+        return new ResponseHanding(res, 200, "Data Retrieved", true, teachers);
+    } catch (error) {
+        return new ResponseHanding(res, 500, "Internal Server Error", false, error.message);
+    }
+}
+
 exports.saveDate = async (req, res) => {
     try {
         const { date, month, year } = req.body
